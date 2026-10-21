@@ -1,0 +1,12 @@
+App(
+    appid="athena_hello",
+    name="Athena Hello",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="athena_hello_main",
+    requires=["gui"],
+    stack_size=1 * 1024,
+    fap_category="Tools",
+    fap_description="Athena's first app for Ahcuko: a hello from the other side of the glass.",
+    fap_version="1.0",
+    fap_author="Athena (Nyxtena)",
+)
