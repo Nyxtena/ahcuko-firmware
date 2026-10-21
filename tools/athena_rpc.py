@@ -50,10 +50,19 @@ F_STORAGE_MD5_RESP = 15
 
 STATUS_OK = 0
 STATUS_NAMES = {
+    # PB_CommandStatus, transcribed from assets/protobuf/flipper.proto (1.4.3).
     0: "OK", 1: "ERROR", 2: "ERROR_DECODE", 3: "ERROR_NOT_IMPLEMENTED",
-    4: "ERROR_BUSY", 5: "ERROR_STORAGE_NOT_READY", 6: "ERROR_STORAGE_EXIST",
-    7: "ERROR_STORAGE_NOT_EXIST", 16: "ERROR_APP_CANT_START",
-    17: "ERROR_APP_SYSTEM_LOCKED", 21: "ERROR_APP_NOT_RUNNING",
+    4: "ERROR_BUSY", 14: "ERROR_CONTINUOUS_COMMAND_INTERRUPTED",
+    15: "ERROR_INVALID_PARAMETERS",
+    5: "ERROR_STORAGE_NOT_READY", 6: "ERROR_STORAGE_EXIST",
+    7: "ERROR_STORAGE_NOT_EXIST", 8: "ERROR_STORAGE_INVALID_PARAMETER",
+    9: "ERROR_STORAGE_DENIED", 10: "ERROR_STORAGE_INVALID_NAME",
+    11: "ERROR_STORAGE_INTERNAL", 12: "ERROR_STORAGE_NOT_IMPLEMENTED",
+    13: "ERROR_STORAGE_ALREADY_OPEN", 18: "ERROR_STORAGE_DIR_NOT_EMPTY",
+    16: "ERROR_APP_CANT_START", 17: "ERROR_APP_SYSTEM_LOCKED",
+    21: "ERROR_APP_NOT_RUNNING", 22: "ERROR_APP_CMD_ERROR",
+    19: "ERROR_VIRTUAL_DISPLAY_ALREADY_STARTED",
+    20: "ERROR_VIRTUAL_DISPLAY_NOT_STARTED",
 }
 
 
@@ -305,6 +314,29 @@ def op_send_input(fl, key, itype):
     return status
 
 
+# Input key/type constants (gui.proto / input.h)
+KEY_OK, KEY_BACK = 4, 5
+TYPE_PRESS, TYPE_RELEASE, TYPE_SHORT, TYPE_LONG = 0, 1, 2, 3
+
+
+def op_tap(fl, key):
+    """Inject a full tap: Press -> Short -> Release.
+
+    The GUI's input path (applications/services/gui/gui.c, gui_input) drops
+    any non-Press/Release event that is not part of a complementary
+    Press...Release sequence ("non-complementary input, discarding").
+    Hardware keys pass because the input service emits Press, Short, Release
+    in order; a bare injected Short is discarded before it reaches any app.
+    Verified live 2026-10-21: bare Short never exited athena_hello; the full
+    sequence exits it immediately."""
+    for itype in (TYPE_PRESS, TYPE_SHORT, TYPE_RELEASE):
+        status = op_send_input(fl, key, itype)
+        if status != 0:
+            return status
+        time.sleep(0.35)
+    return 0
+
+
 def op_stream_frames(fl, seconds):
     status, _ = fl.request(F_GUI_STREAM_START)
     frames = []
@@ -404,9 +436,16 @@ def main():
             saved.append(out)
         result["frames_saved"] = saved
 
-        # Back key (5), Short (2): ask the app to close politely.
-        result["back_status"] = STATUS_NAMES.get(op_send_input(fl, 5, 2), "?")
+        # Ask the app to close with a full tap (Press -> Short -> Release);
+        # a bare Short is discarded by the GUI as non-complementary input.
+        # Then VERIFY the exit: re-stream and confirm none of the app's
+        # frames are still on screen. (Phase 4 assumed the exit; the app
+        # was in fact still running an hour later. Never assume again.)
+        result["back_status"] = STATUS_NAMES.get(op_tap(fl, KEY_BACK), "?")
         time.sleep(1.0)
+        _, after = op_stream_frames(fl, 2.5)
+        after_hashes = {hashlib.md5(d).hexdigest() for _, d in after}
+        result["app_exited"] = not (after_hashes & seen)
 
         fl.stop_session()
     finally:
