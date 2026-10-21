@@ -313,15 +313,17 @@ def op_md5(fl, path):
     return status, digest
 
 
-def op_app_start(fl, name):
+def op_app_start(fl, name, args=None):
     req = field_bytes(1, name.encode())
+    if args is not None:
+        req += field_bytes(2, args.encode())
     status, _ = fl.request(F_APP_START, req)
     return status
 
 
-def op_send_input(fl, key, itype):
+def op_send_input(fl, key, itype, collect=None):
     req = field_varint(1, key) + field_varint(2, itype)
-    status, _ = fl.request(F_GUI_INPUT, req)
+    status, _ = fl.request(F_GUI_INPUT, req, collect_frames=collect)
     return status
 
 
@@ -330,7 +332,7 @@ KEY_OK, KEY_BACK = 4, 5
 TYPE_PRESS, TYPE_RELEASE, TYPE_SHORT, TYPE_LONG = 0, 1, 2, 3
 
 
-def op_tap(fl, key):
+def op_tap(fl, key, collect=None):
     """Inject a full tap: Press -> Short -> Release.
 
     The GUI's input path (applications/services/gui/gui.c, gui_input) drops
@@ -339,9 +341,13 @@ def op_tap(fl, key):
     Hardware keys pass because the input service emits Press, Short, Release
     in order; a bare injected Short is discarded before it reaches any app.
     Verified live 2026-10-21: bare Short never exited athena_hello; the full
-    sequence exits it immediately."""
+    sequence exits it immediately.
+
+    `collect`, if a list, receives unsolicited frames the input requests
+    displaced (request() would otherwise discard them) — e.g. an RPC app's
+    event frames triggered by the tap itself."""
     for itype in (TYPE_PRESS, TYPE_SHORT, TYPE_RELEASE):
-        status = op_send_input(fl, key, itype)
+        status = op_send_input(fl, key, itype, collect=collect)
         if status != 0:
             return status
         time.sleep(0.35)
@@ -389,6 +395,187 @@ def frame_to_png(data, path, scale=4):
     png += chunk(b"IEND", b"")
     with open(path, "wb") as fh:
         fh.write(png)
+
+
+# ---- Athena Link v1 (D4): App Data Exchange + system datetime + storage read ----
+
+F_APP_DATA_EXCHANGE = 65
+F_APP_EXIT = 47
+F_SET_DATETIME = 37
+F_GET_DATETIME_REQ = 35
+F_STORAGE_READ_REQ = 9
+F_STORAGE_READ_RESP = 10
+
+
+def op_set_datetime(fl, when=None):
+    """Stock RPC time sync (PB_System.SetDateTimeRequest, Main field 37)."""
+    import datetime as _dt
+
+    now = when or _dt.datetime.now()
+    dt_msg = b"".join(
+        [
+            field_varint(1, now.hour),
+            field_varint(2, now.minute),
+            field_varint(3, now.second),
+            field_varint(4, now.day),
+            field_varint(5, now.month),
+            field_varint(6, now.year),
+            field_varint(7, now.isoweekday()),
+        ]
+    )
+    status, _ = fl.request(F_SET_DATETIME, field_bytes(1, dt_msg))
+    return status
+
+
+def op_read_file(fl, path):
+    """Storage Read (Main 9/10): returns (status, bytes)."""
+    status, frames = fl.request(F_STORAGE_READ_REQ, field_bytes(1, path.encode()))
+    data = b""
+    for frame in frames:
+        resp = frame.get(F_STORAGE_READ_RESP, [b""])[0]
+        if resp:
+            file_msg = parse_fields(resp).get(1, [b""])[0]
+            if file_msg:
+                for chunk in parse_fields(file_msg).get(4, []):
+                    data += chunk
+    return status, data
+
+
+def op_app_data_send(fl, payload):
+    """Send one App Data Exchange frame (Main 65) to the running RPC app.
+
+    Does not wait: the device answers with a confirm status frame for
+    this command id, and the app's own replies arrive as further Main
+    frames carrying field 65. Use HubClient's pump to collect them."""
+    cid = fl.next_id
+    fl.next_id += 1
+    fl.send_frame(build_main(cid, F_APP_DATA_EXCHANGE, field_bytes(1, payload)))
+    return cid
+
+
+def op_app_exit(fl):
+    status, _ = fl.request(F_APP_EXIT, b"")
+    return status
+
+
+class HubClient:
+    """Athena Link v1 session client (design §5.3/§5.4).
+
+    Handshake: DeviceInfo -> SetDateTime (stock RPC time sync) ->
+    App Start -> wait for AppState STARTED -> hello envelope -> ack.
+    Afterwards call() sends one envelope and collects its ack + final
+    result/error. Unsolicited app frames (event.*) are queued.
+    """
+
+    def __init__(self, fl):
+        self.fl = fl
+        self.seq = 0
+        self.counter = 0
+        self.session = None
+        self.events = []
+        self.status_by_cid = {}
+        self.device = None
+
+    # -- frame plumbing -------------------------------------------------
+    def _classify(self, frame):
+        if F_APP_DATA_EXCHANGE in frame:
+            raw = parse_fields(frame[F_APP_DATA_EXCHANGE][0]).get(1, [b""])[0]
+            try:
+                return "data", json.loads(raw.decode("utf-8"))
+            except Exception:
+                return "data_raw", raw
+        if F_APP_STATE in frame:
+            state = parse_fields(frame[F_APP_STATE][0]).get(1, [0])[0]
+            return "state", state
+        if 1 in frame and 2 in frame:
+            return "status", (frame[1][0], frame[2][0])
+        return "other", frame
+
+    def _pump(self, timeout, want=None):
+        """Read frames until want(collected_data) is true or timeout.
+
+        Returns the list of data messages seen (dicts)."""
+        collected = []
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            try:
+                frame = self.fl._read_exact_frame(timeout=max(0.2, deadline - time.time()))
+            except TimeoutError:
+                break
+            # Status accounting first: nanopb omits zero-valued fields,
+            # so an OK response may carry no command_status field at all.
+            if 1 in frame:
+                self.status_by_cid[frame[1][0]] = frame.get(2, [0])[0]
+            kind, value = self._classify(frame)
+            if kind == "data":
+                if isinstance(value, dict) and str(value.get("type", "")).startswith("event."):
+                    self.events.append(value)
+                collected.append(value)
+            elif kind == "data_raw":
+                collected.append({"__raw__": value})
+            elif kind == "state":
+                self.last_app_state = value
+            if want is not None and want(collected):
+                break
+        return collected
+
+    # -- session ---------------------------------------------------------
+    def connect(self, hub_path, timeout=8.0):
+        status, info = op_device_info(self.fl)
+        self.device = {k: info.get(k, "") for k in ("hardware_name", "firmware_version", "firmware_commit")}
+        if op_set_datetime(self.fl) != 0:
+            raise RuntimeError("SetDateTime failed")
+        self.last_app_state = None
+        # App Start via a raw send + pump: the AppState STARTED frame is
+        # unsolicited and request() would discard it.
+        cid = self.fl.next_id
+        self.fl.next_id += 1
+        # args must be exactly "RPC": rpc_app.c replaces it with the
+        # "RPC %08lX" handle string the app parses (verified in source).
+        start_req = field_bytes(1, hub_path.encode()) + field_bytes(2, b"RPC")
+        self.fl.send_frame(build_main(cid, F_APP_START, start_req))
+        self._pump(
+            4.0,
+            want=lambda _c: self.status_by_cid.get(cid) == 0
+            and getattr(self, "last_app_state", None) == 1,
+        )
+        if self.status_by_cid.get(cid) != 0:
+            raise RuntimeError(f"Hub App Start failed: status {self.status_by_cid.get(cid)}")
+        self.session = f"s-{int(time.time())}"
+        ack = self.call("hello", {"session": self.session}, timeout=timeout, expect_final=False)
+        if not ack.get("ack"):
+            raise RuntimeError(f"Hub hello not acked: {ack}")
+        return ack["ack"]
+
+    def call(self, msg_type, payload=None, timeout=6.0, expect_final=True):
+        self.counter += 1
+        msg_id = f"m{self.counter}"
+        envelope = {"v": 1, "id": msg_id, "seq": self.seq, "type": msg_type, "payload": payload or {}}
+        self.seq += 1
+        cid = op_app_data_send(self.fl, json.dumps(envelope).encode("utf-8"))
+
+        def done(collected):
+            kinds = {
+                m.get("type") for m in collected if isinstance(m, dict) and m.get("in_reply") == msg_id
+            }
+            if not expect_final:
+                return "ack" in kinds or "error" in kinds
+            return "result" in kinds or "error" in kinds
+
+        collected = self._pump(timeout, want=done)
+        out = {"id": msg_id, "send_cid": cid, "confirm_status": self.status_by_cid.get(cid)}
+        for m in collected:
+            if isinstance(m, dict) and m.get("in_reply") == msg_id:
+                if m.get("type") == "ack":
+                    out["ack"] = m
+                elif m.get("type") in ("result", "error"):
+                    out["final"] = m
+        return out
+
+    def send_raw(self, payload, timeout=3.0):
+        cid = op_app_data_send(self.fl, payload)
+        collected = self._pump(timeout)
+        return {"send_cid": cid, "confirm_status": self.status_by_cid.get(cid), "data": collected}
 
 
 def main():
