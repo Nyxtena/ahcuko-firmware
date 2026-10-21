@@ -1,0 +1,12 @@
+App(
+    appid="athena_hub",
+    name="Athena Hub",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="athena_hub_main",
+    requires=["gui"],
+    stack_size=3 * 1024,
+    fap_category="Tools",
+    fap_description="Athena Link v1 endpoint: receives bounded tasks over RPC App Data Exchange, displays them, keeps an append-only ledger, and honors a local Pause.",
+    fap_version="0.1.2",
+    fap_author="Athena (Nyxtena)",
+)
