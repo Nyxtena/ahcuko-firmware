@@ -1,0 +1,15 @@
+{
+  "firmware": "Ahcuko Firmware",
+  "version": "1.4.3-ahcuko.2",
+  "branch": "ahcuko-a1",
+  "commit": "fc3031f7",
+  "base": "official 1.4.3 (8622f1a2), API 87.1",
+  "command": "./fbt TARGET_HW=7 DEBUG=0 COMPACT=1 DIST_SUFFIX=1.4.3-ahcuko.2 fap_dist updater_package",
+  "artifacts": {
+    "full_dfu_sha256": "54cf86f45e4b38c7b1546eb829aea497b97484a84902f64e2fa1287cb3ee9240",
+    "full_dfu_bytes": 767609,
+    "update_tgz_sha256": "9178a64e846b91e13b4bafb438b1b68fbac3b2d3300ec7043e2a3325f4d53501"
+  },
+  "api_symbols_md5": "eeaf0fc6b14112958c83c72b1b18ab7b",
+  "flashed": "2026-10-21, updater-verified, /int parity 5/5, XP reset done"
+}
