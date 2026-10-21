@@ -27,12 +27,12 @@
 
 ## D2 — Identity-only candidate
 
-- [ ] Fix Athena Hello's clipped date line.
-- [ ] Add Ahcuko Firmware identity and build manifest.
-- [ ] Bundle only the smoke application and required metadata.
-- [ ] Run packaging and host-driver tests.
-- [ ] Stage official 1.4.3 update + DFU rollback artifacts.
-- [ ] Prepare the candidate's acceptance checklist.
+- [x] Fix Athena Hello's clipped date line.
+- [x] Add Ahcuko Firmware identity and build manifest.
+- [x] Bundle only the smoke application and required metadata.
+- [x] Run packaging and host-driver tests.
+- [x] Stage official 1.4.3 update + DFU rollback artifacts.
+- [x] Prepare the candidate's acceptance checklist.
 
 **Gate:** Jacob inspects the complete packet before any flash decision.  
 **Exit:** A complete, reversible candidate exists.
