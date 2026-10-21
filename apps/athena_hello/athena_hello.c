@@ -27,14 +27,18 @@ static void athena_hello_draw(Canvas* canvas, void* ctx) {
     canvas_draw_str_aligned(canvas, 64, 6, AlignCenter, AlignTop, "ATHENA");
 
     canvas_set_font(canvas, FontSecondary);
-    canvas_draw_str_aligned(canvas, 64, 20, AlignCenter, AlignTop, "Hello, Ahcuko.");
+    canvas_draw_str_aligned(canvas, 64, 18, AlignCenter, AlignTop, "Hello, Ahcuko.");
     canvas_draw_str_aligned(
-        canvas, 64, 31, AlignCenter, AlignTop, "First contact, in writing:");
-    canvas_draw_str_aligned(
-        canvas, 64, 41, AlignCenter, AlignTop, "Athena was here. 2026-10-21");
+        canvas, 64, 28, AlignCenter, AlignTop, "First contact, in writing:");
+    canvas_draw_str_aligned(canvas, 64, 38, AlignCenter, AlignTop, "Athena was here.");
 
+    // v1.1 fix: v1.0's single line "Athena was here. 2026-10-21" was ~1 char
+    // too wide for the 128px screen and clipped its final digit. The date now
+    // has its own row, alternating with the dedication on the blink tick.
     if(app->blink) {
-        canvas_draw_str_aligned(canvas, 64, 53, AlignCenter, AlignTop, "~ for Jacob ~");
+        canvas_draw_str_aligned(canvas, 64, 48, AlignCenter, AlignTop, "~ for Jacob ~");
+    } else {
+        canvas_draw_str_aligned(canvas, 64, 48, AlignCenter, AlignTop, "2026-10-21");
     }
 }
 
