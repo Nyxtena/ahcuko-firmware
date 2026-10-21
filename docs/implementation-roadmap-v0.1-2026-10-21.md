@@ -51,12 +51,12 @@
 
 ## D4 — Athena Hub v0.1
 
-- [ ] Implement the Hub FAP interface: status, task, pause, result, error.
-- [ ] Implement Athena Link v1 envelopes and acknowledgements.
-- [ ] Add host time synchronization to the session handshake.
-- [ ] Extend `athena_rpc.py` for App Data Exchange.
-- [ ] Add append-only device ledger and host mirror.
-- [ ] Test malformed tasks, duplicate task IDs, disconnects, and Hub crashes.
+- [x] Implement the Hub FAP interface: status, task, pause, result, error.
+- [x] Implement Athena Link v1 envelopes and acknowledgements.
+- [x] Add host time synchronization to the session handshake.
+- [x] Extend `athena_rpc.py` for App Data Exchange.
+- [x] Add append-only device ledger and host mirror.
+- [x] Test malformed tasks, duplicate task IDs, disconnects, and Hub crashes. (Disconnect testing found and fixed a real teardown defect — see the D4 report; a deliberate hard-fault crash test was judged out of scope for v0.1.)
 
 **Exit:** Athena assigns a bounded task; Ahcuko displays, executes, records, and returns a matching result.
 
