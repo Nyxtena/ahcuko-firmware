@@ -276,6 +276,16 @@ Athena features must not erase or counterfeit Ahcuko's existing pet state.
 - Any interaction intended to raise or exercise the dolphin is explicit and inspectable.
 - Backup and restore tests must continue to compare the state file byte-for-byte when no intentional interaction occurred.
 
+**Amendment A1 — Jacob, 2026-10-21 (applies at the mascot-replacement step; §6.5 above remains in force until then):**
+
+Jacob directed that the mascot replacement (filed 2026-10-21, D4 era) also replaces the pet's progression, not just its art:
+
+1. **XP resets by design.** The replacement mascot starts at zero XP (level 1). Before the reset, the existing `.dolphin.state` is archived into the project record — the original dolphin's history is preserved and the reset is reversible.
+2. **The XP award schedule is retuned.** The per-action award weights (the deeds table, `applications/services/dolphin/helpers/dolphin_deed.c`) are redesigned and ratified by Jacob in that step's design pass — which actions award XP, and how much, becomes a deliberate property of the new mascot rather than inherited stock tuning. This makes the step a resource pack plus one contained firmware patch, delivered through the standard candidate pipeline.
+3. **Continuity resumes on the new state.** After the reset point, §6.5 applies to the replacement mascot's state exactly as written: no counterfeiting, interactions explicit and inspectable, byte-for-byte comparisons in backup/restore tests.
+
+Open questions parked for that step's design pass: the new award table's values and daily limits; whether level thresholds (level-up curve) also change or only the awards; which animation/state set the replacement mascot needs per level.
+
 ## 7. Authority and local confirmation
 
 Jacob's position is that his research tool should not be inhibited on an assumption of bad intent. This design therefore does not turn Athena into a censor or remove Jacob's capabilities.
