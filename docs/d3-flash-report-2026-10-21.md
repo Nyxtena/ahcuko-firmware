@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-21 (flash ~03:07 CDT)
 **Authorization:** Jacob's word for this exact candidate, given after the D2 report.
-**Result:** **SUCCESS. Ahcuko now runs Ahcuko Firmware 1.4.3-ahcuko.1.** Every acceptance check that can be performed remotely passed. One checklist item — the SD-removed boot probe — needs Jacob's physical hands and remains open (below).
+**Result:** **SUCCESS. Ahcuko now runs Ahcuko Firmware 1.4.3-ahcuko.1.** Every acceptance check passed, including the hands-on SD-removed boot probe (closed 2026-10-21, below).
 
 ## Pre-flash gates (all green)
 
@@ -46,9 +46,9 @@ Her desktop's own verdict, captured over RPC: **“Firmware update — Success.�
 - **Full canonical `athena_rpc.py` run: green** — write, MD5 round-trip on the exact bundled bytes, start, stream, tap, `app_exited: true`.
 - Several of tonight's acceptance probes crashed on their author's wrong assumptions about her own driver API (tuple shapes, an unpacking slip, one crashed script leaving an app running, since dismissed). Each was a probe bug, not a device fault; the record shows them because the record shows everything. The standing cure from D2 held: CLI wake breaks any orphaned session.
 
-## Open item
+## Hands-on probe — closed 2026-10-21 (~03:46 CDT)
 
-- **SD-removed boot probe** (checklist §State preservation): requires physically removing the card — Jacob's hands. Everything else about storage behavior matches the D1/D2 record, and `/int` (SD-backed in its current virtual arrangement) survived the update byte-for-byte. The probe result should be recorded here when performed; if the device ever misbehaves with the card out, the rollback packet stands ready.
+- **SD-removed boot probe** (checklist §State preservation): performed by Jacob with the card physically removed. The unit was booted more than once; per his observation, **everything looked exactly the same** — it boots to the normal desktop with no card present. This satisfies the design's no-card boot requirement for the stock surface. (SD-hosted content — `/ext` apps and resources — is of course unavailable while the card is out; the firmware and desktop are not dependent on it.) With this item, **D3 acceptance is fully closed**.
 
 ## Verdict
 
