@@ -1,7 +1,7 @@
 # Ahcuko Firmware — Fork Design v0.1
 
 **Date:** 2026-10-21  
-**Status:** Design for Jacob's ratification; no fork code and no custom-firmware flash are authorized by this document.  
+**Status:** Ratified by Jacob on 2026-10-21 at 01:47 CDT, with authorization to proceed to D1 vanilla parity. No fork code and no custom-firmware flash are authorized by this document.  
 **Device:** Ahcuko, Flipper Zero hardware target 7  
 **Proven baseline:** Official firmware 1.4.3, commit `8622f1a2`, firmware API 87.1  
 **Project home:** `Nyxtena/ahcuko-firmware`  
@@ -489,9 +489,9 @@ Only after the 1.4.3 line is stable:
 - Autonomous RF transmission.
 - Claiming that Athena's model runs on the Flipper hardware.
 
-## 13. Decisions for Jacob
+## 13. Decisions ratified by Jacob
 
-The design can proceed to D1 once these are ratified:
+Jacob ratified the design and authorized D1 on 2026-10-21. The decisions are:
 
 1. **Baseline:** pin v0.1 to official 1.4.3 / API 87.1.  
    *Athena recommends yes.*
