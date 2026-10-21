@@ -5,22 +5,22 @@
 
 ## D0 — Design ratification
 
-- [ ] Baseline pinned to official 1.4.3, commit `8622f1a2`, API 87.1.
-- [ ] Repository topology ratified.
-- [ ] Athena Hub starts as a foreground FAP.
-- [ ] Tier 2 authority model ratified.
-- [ ] Stock applications remain intact for v0.1.
-- [ ] Working on-device name ratified.
+- [x] Baseline pinned to official 1.4.3, commit `8622f1a2`, API 87.1.
+- [x] Repository topology ratified.
+- [x] Athena Hub starts as a foreground FAP.
+- [x] Tier 2 authority model ratified.
+- [x] Stock applications remain intact for v0.1.
+- [x] Working on-device name ratified.
 
 **Deliverable:** decisions appended to the design record.
 
 ## D1 — Vanilla parity build
 
-- [ ] Record the firmware source repository and exact commit in a lock file.
-- [ ] Build unmodified upstream 1.4.3 with the project toolchain.
-- [ ] Record target, API, artifact sizes, hashes, and package contents.
-- [ ] Compare the result with the official 1.4.3 artifact.
-- [ ] Publish a reproducibility packet and explain unavoidable differences.
+- [x] Record the firmware source repository and exact commit in a lock file.
+- [x] Build unmodified upstream 1.4.3 with the project toolchain.
+- [x] Record target, API, artifact sizes, hashes, and package contents.
+- [x] Compare the result with the official 1.4.3 artifact.
+- [x] Publish a reproducibility packet and explain unavoidable differences.
 
 **Gate:** No device flash.  
 **Exit:** The baseline is buildable and understood.
