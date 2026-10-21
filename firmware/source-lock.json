@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "recorded_at": "2026-10-21T06:51:47.366108+00:00",
+  "purpose": "D1 vanilla parity build witness lock; not yet the long-term fork import.",
+  "repository": "https://github.com/flipperdevices/flipperzero-firmware.git",
+  "tag": "1.4.3",
+  "commit": "8622f1a2b83d8f4918dd5fa3f43de963f6d6f819",
+  "commit_short": "8622f1a2",
+  "tree_clean_at_clone": true,
+  "clone": {
+    "depth": 1,
+    "branch_or_tag": "1.4.3",
+    "submodules": "recursive, shallow",
+    "checkout_path_role": "Athena VM goal hidden_files/d1 build witness"
+  },
+  "submodules": [
+    {
+      "path": "assets/protobuf",
+      "commit": "1c84fa48919cbb71d1cc65236fc0ee36740e24c6"
+    },
+    {
+      "path": "documentation/doxygen/doxygen-awesome-css",
+      "commit": "df88fe4fdd97714fadfd3ef17de0b4401f804052"
+    },
+    {
+      "path": "lib/FreeRTOS-Kernel",
+      "commit": "def7d2df2b0506d3d249334974f51e427c17a41c"
+    },
+    {
+      "path": "lib/FreeRTOS-Kernel/portable/ThirdParty/Community-Supported-Ports",
+      "commit": "4273ca3211b99914f31518378fb590fbff064953"
+    },
+    {
+      "path": "lib/FreeRTOS-Kernel/portable/ThirdParty/Partner-Supported-Ports",
+      "commit": "3f9c99a682c5c796bb7eb89fd9c4385688fce27a"
+    },
+    {
+      "path": "lib/heatshrink",
+      "commit": "7398ccc91652a33483245200cfa1a83b073bc206"
+    },
+    {
+      "path": "lib/libusb_stm32",
+      "commit": "6ca2857519f996244f7b324dd227fdf0a075fffb"
+    },
+    {
+      "path": "lib/mbedtls",
+      "commit": "107ea89daaefb9867ea9121002fbbdf926780e98"
+    },
+    {
+      "path": "lib/mbedtls/framework",
+      "commit": "94599c0e3b5036e086446a51a3f79640f70f22f6"
+    },
+    {
+      "path": "lib/microtar",
+      "commit": "1e921369b2c92bb219fcef84a37d4d2347794c0f"
+    },
+    {
+      "path": "lib/mlib",
+      "commit": "62c8ac3e5d4a7a4f8757328e7a80286fde2686b6"
+    },
+    {
+      "path": "lib/nanopb",
+      "commit": "6cfe48d6f1593f8fa5c0f90437f5e6522587745e"
+    },
+    {
+      "path": "lib/stm32wb_cmsis",
+      "commit": "d1b860584dfe24d40d455ae624ed14600dfa93c9"
+    },
+    {
+      "path": "lib/stm32wb_copro",
+      "commit": "133182d5583e998bb263cd947105be4df9c29cb3"
+    },
+    {
+      "path": "lib/stm32wb_copro/scripts",
+      "commit": "781464e628eb694b4c98a79ab524c293f527fc8d"
+    },
+    {
+      "path": "lib/stm32wb_hal",
+      "commit": "cfd0dd258cb031c95b2b2d6d04c19f9f625fe3e8"
+    }
+  ],
+  "build": {
+    "command": "./fbt TARGET_HW=7 DEBUG=0 COMPACT=1 fap_dist updater_package",
+    "environment": {
+      "DIST_SUFFIX": "1.4.3",
+      "FBT_NO_SYNC": "1"
+    },
+    "firmware_origin": "Official",
+    "target_hw": 7,
+    "firmware_app_set": "default"
+  },
+  "official_reference": {
+    "firmware_version": "1.4.3",
+    "firmware_commit_short": "8622f1a2",
+    "api": "87.1",
+    "sdk_zip_sha256": "2e89e70c6b5770440cbf02f2ca01a2f8804e05ddb77f66afdd23ed2584740c7f",
+    "full_dfu_sha256": "375eb4a1c0a55ef3d0948eb93476b6601ab83f4dc0c6f6e33daf506495b2f00d",
+    "full_dfu_md5": "1f8d70e5a35d6b9a1f48d25a0291a304"
+  }
+}
