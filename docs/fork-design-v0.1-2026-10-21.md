@@ -281,10 +281,10 @@ Athena features must not erase or counterfeit Ahcuko's existing pet state.
 Jacob directed that the mascot replacement (filed 2026-10-21, D4 era) also replaces the pet's progression, not just its art:
 
 1. **XP resets by design.** The replacement mascot starts at zero XP (level 1). Before the reset, the existing `.dolphin.state` is archived into the project record — the original dolphin's history is preserved and the reset is reversible.
-2. **The XP award schedule is retuned.** The per-action award weights (the deeds table, `applications/services/dolphin/helpers/dolphin_deed.c`) are redesigned and ratified by Jacob in that step's design pass — which actions award XP, and how much, becomes a deliberate property of the new mascot rather than inherited stock tuning. This makes the step a resource pack plus one contained firmware patch, delivered through the standard candidate pipeline.
+2. **The existing progression system is used as-is.** The dolphin service's machinery — XP counter, mood counter, level curve, deed plumbing with daily caps, persistence, passport stats — is generic and stays untouched; it accounts for whatever character the art layer presents. The only progression-side change available in that step's design pass is adjusting the award **weight constants** (the deeds table, `applications/services/dolphin/helpers/dolphin_deed.c`) if Jacob chooses to; leaving them stock is equally valid. Either way the step is art assets plus at most a constants edit, delivered through the standard candidate pipeline — no new progression engine.
 3. **Continuity resumes on the new state.** After the reset point, §6.5 applies to the replacement mascot's state exactly as written: no counterfeiting, interactions explicit and inspectable, byte-for-byte comparisons in backup/restore tests.
 
-Open questions parked for that step's design pass: the new award table's values and daily limits; whether level thresholds (level-up curve) also change or only the awards; which animation/state set the replacement mascot needs per level.
+Open questions parked for that step's design pass: whether to adjust any deed weight constants (and if so, values and daily limits); which animation/state set the replacement mascot needs per level across all four surfaces (desktop idle packs, internal system animations, blocking status screens, passport).
 
 ## 7. Authority and local confirmation
 
