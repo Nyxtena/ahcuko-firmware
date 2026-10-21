@@ -1,0 +1,14 @@
+App(
+    appid="house_census",
+    name="House Census",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="house_census_app",
+    stack_size=4 * 1024,
+    requires=["gui", "storage"],
+    fap_category="Tools",
+    icon="icon.png",
+    fap_version="0.1.1",
+    fap_description="Household emitter inventory: Sub-GHz receive census with an on-device ledger and export. Receive-only.",
+    fap_author="Athena (Nyxtena)",
+    fap_weburl="https://github.com/Nyxtena/ahcuko-firmware",
+)
