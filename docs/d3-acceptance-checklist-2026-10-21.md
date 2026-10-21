@@ -1,6 +1,6 @@
 # D3 Acceptance Checklist — First Custom Flash (1.4.3-ahcuko.1)
 
-**Status:** EXECUTED 2026-10-21 — **PASSED** on every remotely checkable item; full record in `docs/d3-flash-report-2026-10-21.md`. Jacob's word was given after the D2 report. All pre-flash gates met; flash applied cleanly (~96 s); identity, `/int` (incl. `.dolphin.state`), `/ext`, stock apps (Sub-GHz, NFC by name — Archive is not RPC-startable on stock either), bundled Hello (both frames, verified exit), and the full driver run all verified. **One item remains open: the SD-removed boot probe, which needs Jacob's physical hands.**
+**Status:** EXECUTED 2026-10-21 — **PASSED** on every remotely checkable item; full record in `docs/d3-flash-report-2026-10-21.md`. Jacob's word was given after the D2 report. All pre-flash gates met; flash applied cleanly (~96 s); identity, `/int` (incl. `.dolphin.state`), `/ext`, stock apps (Sub-GHz, NFC by name — Archive is not RPC-startable on stock either), bundled Hello (both frames, verified exit), and the full driver run all verified. **The SD-removed boot probe was performed by Jacob on 2026-10-21 (~03:46 CDT): booted repeatedly with the card out, desktop unchanged — D3 acceptance is fully closed.**
 
 Candidate: **Ahcuko Firmware 1.4.3-ahcuko.1** (identity-only build from D2; build manifest in `firmware/build-manifest-1.4.3-ahcuko.1.json`).
 
