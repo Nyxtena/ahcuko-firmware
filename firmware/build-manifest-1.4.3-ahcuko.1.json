@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "recorded_at": "2026-10-21T07:52:31.241185+00:00",
+  "candidate": {
+    "product": "Ahcuko Firmware",
+    "version": "1.4.3-ahcuko.1",
+    "stage": "D2 identity-only candidate \u2014 prepared, NOT flashed (D3 gate)",
+    "firmware_origin_string": "Ahcuko",
+    "build_date": "21-10-2026"
+  },
+  "base": {
+    "repository": "https://github.com/flipperdevices/flipperzero-firmware.git",
+    "tag": "1.4.3",
+    "commit": "8622f1a2b83d8f4918dd5fa3f43de963f6d6f819",
+    "api": "87.1",
+    "api_symbols_csv_md5": "eeaf0fc6b14112958c83c72b1b18ab7b"
+  },
+  "fork": {
+    "branch": "ahcuko-1.4.3",
+    "tag": "1.4.3-ahcuko.1",
+    "tip_commit": "18a77218",
+    "commits": [
+      {
+        "commit": "4d2889e6",
+        "subject": "identity: FIRMWARE_ORIGIN becomes \"Ahcuko Firmware\""
+      },
+      {
+        "commit": "4ca48e4f",
+        "subject": "apps: bundle athena_hello v1.1 smoke app in applications_user"
+      },
+      {
+        "commit": "18a77218",
+        "subject": "identity: origin is the single word \"Ahcuko\" (pipeline truncates at space)"
+      }
+    ],
+    "identity_patch": "firmware/identity-1.4.3-ahcuko.1.patch",
+    "tree_clean_after_build": true
+  },
+  "build": {
+    "command": "./fbt TARGET_HW=7 DEBUG=0 COMPACT=1 fap_dist updater_package",
+    "environment": {
+      "DIST_SUFFIX": "1.4.3-ahcuko.1",
+      "FBT_NO_SYNC": "1"
+    },
+    "toolchain": "repo-pinned, GCC 12.3.1 (20230626)",
+    "firmware_size": {
+      ".text": 601068,
+      ".rodata": 166060,
+      ".data": 680,
+      ".bss": 4748,
+      "free_flash": 280428
+    }
+  },
+  "artifacts": {
+    "flipper-z-f7-full-1.4.3-ahcuko.1.dfu": {
+      "size": 768457,
+      "sha256": "6a029d9e706ba17acaebfea82d215d042350c41af710d83aaf3b808d812cc208"
+    },
+    "flipper-z-f7-update-1.4.3-ahcuko.1.tgz": {
+      "size": 2196085,
+      "sha256": "afdaaa9b3ab16c950f1d7f012901a0520aafe20cf8d0e4c7241cd47bab65706e"
+    },
+    "flipper-z-f7-sdk-1.4.3-ahcuko.1.zip": {
+      "size": 19620567,
+      "sha256": "0497bac003aaef4afc2c4ee11997daea1c018de4ad9cca05e4caa9d5cb4d8a6c"
+    },
+    "f7-update-1.4.3-ahcuko.1/resources.ths": {
+      "sha256": "4931d09dab2ee49c2668abc19ba30b7a483e3972a18188c8adaf1cfb4e15fc73"
+    },
+    "f7-update-1.4.3-ahcuko.1/updater.bin": {
+      "sha256": "c41abe4328c7388023e76e1aeb95179eba0dd0046cd3ded21d570f3d69a2b5ba"
+    },
+    "f7-update-1.4.3-ahcuko.1/radio.bin": {
+      "sha256": "134a9af448d2bc35995600c9e95723a387c144c2d1adea671086f16f95d327df",
+      "md5": "0b84a0f95ec17c9c3b26e9169865e10a",
+      "note": "byte-identical to the official 1.4.3 bundle's radio.bin"
+    }
+  },
+  "bundled_apps": [
+    {
+      "appid": "athena_hello",
+      "version": "1.1",
+      "resource_path": "apps/Tools/athena_hello.fap",
+      "fbt_built_md5": "3288e5a7309c2302df23d6e21df2dab9",
+      "ufbt_built_md5": "a681a6927a9ef36f4e003be43b5a59b6",
+      "note": "same source; uFBT build is the one deployed and screen-verified live on Ahcuko 2026-10-21"
+    }
+  ],
+  "verification": {
+    "api_symbols_identical_to_official": true,
+    "update_fuf_info": "1.4.3-ahcuko.1",
+    "resource_manifest_delta_vs_vanilla": "+2 entries only: D apps/Tools and F apps/Tools/athena_hello.fap",
+    "host_driver_test": "athena_rpc.py full run green on stock 1.4.3 incl. verified app exit (app_exited: true)"
+  },
+  "rollback": {
+    "packet": "docs/d2-rollback-packet-2026-10-21.md",
+    "official_full_dfu_md5": "1f8d70e5a35d6b9a1f48d25a0291a304",
+    "official_update_tgz_sha256": "6cac0175c543c409f81e113ae21264dda74b5951c67805860b50ab3a89056f1f"
+  },
+  "flash_status": "NOT FLASHED \u2014 D3 requires Jacob's separate word for this exact candidate"
+}
