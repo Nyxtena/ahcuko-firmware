@@ -182,7 +182,18 @@ class Flipper:
             self._pump(0.25)
 
     def send_frame(self, payload):
-        os.write(self.fd, enc_varint(len(payload)) + payload)
+        # Write-all with backpressure: the tty fd is nonblocking, so a
+        # large or rapid send can raise BlockingIOError (EAGAIN) or write
+        # partially once the device-side drain lags. Loop until every byte
+        # is out. (Found 2026-10-21 during D3 candidate staging: an unpaced
+        # multi-MB write overflowed the tty; the fix was proven there.)
+        view = memoryview(enc_varint(len(payload)) + payload)
+        while view:
+            try:
+                n = os.write(self.fd, view)
+                view = view[n:]
+            except BlockingIOError:
+                time.sleep(0.02)
 
     def request(self, content_field, content=b"", collect_frames=None):
         """Send one command; read frames until has_next clears.
